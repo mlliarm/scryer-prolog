@@ -3056,15 +3056,15 @@ impl Machine {
                                             // clause so we avoid generating a choice
                                             // point in case there isn't.
                                             match self.find_living_dynamic(oi, ii + 1) {
-                                                Some(_) => {
+                                                Some((_,_,ii,len,_)) if (ii as usize) < len => {
                                                     self.machine_st.registers[self.machine_st.num_of_args + 1] =
                                                         fixnum_as_cell!(Fixnum::build_with(self.machine_st.cc as i64));
 
-                                                    self.machine_st.num_of_args += 2;
+                                                    self.machine_st.num_of_args += 1;
                                                     self.machine_st.indexed_try(offset);
-                                                    self.machine_st.num_of_args -= 2;
+                                                    self.machine_st.num_of_args -= 1;
                                                 }
-                                                None => {
+                                                _ => {
                                                     self.machine_st.p = p + offset;
                                                     self.machine_st.oip = 0;
                                                     self.machine_st.iip = 0;
@@ -3081,7 +3081,7 @@ impl Machine {
                                                 .num_cells;
 
                                             self.machine_st.cc = cell_as_fixnum!(
-                                                self.machine_st.stack[stack_loc!(OrFrame, b, n-2)]
+                                                self.machine_st.stack[stack_loc!(OrFrame, b, n-1)]
                                             ).get_num() as usize;
 
                                             if is_next_clause {
